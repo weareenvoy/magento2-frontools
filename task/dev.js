@@ -7,7 +7,7 @@ module.exports = function() { // eslint-disable-line func-names
   // Prevent runing inheritance task more than once
   plugins.util.env.pipeline = true;
 
-  plugins.runSequence('inheritance', 'babel', 'styles', () => {
+  plugins.runSequence('inheritance', 'babel', 'styles', 'templates', () => {
     // Setup browser-sync
     plugins.browserSync.create();
     plugins.browserSync(
