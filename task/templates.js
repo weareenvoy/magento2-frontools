@@ -7,8 +7,6 @@ module.exports = function() { // eslint-disable-line func-names
         themes  = plugins.getThemes(),
         streams = plugins.mergeStream();
 
-  console.log('templates.js working');
-
   // Generate all necessary symlinks before templates compilation, but ony if not a part of tasks pipeline
   if (!plugins.util.env.pipeline) {
     plugins.runSequence('inheritance');
