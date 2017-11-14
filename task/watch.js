@@ -11,11 +11,11 @@ module.exports = function(resolve) { // eslint-disable-line func-names
   plugins.path                 = require('path');
   plugins.helper               = {};
   plugins.helper.babel         = require('../helper/babel');
-  plugins.helper.cssLint       = require('../helper/css-lint');
+  // plugins.helper.cssLint       = require('../helper/css-lint');
   plugins.helper.dependecyTree = require('../helper/dependency-tree-builder');
   plugins.helper.inheritance   = require('../helper/inheritance-resolver');
   plugins.helper.sass          = require('../helper/scss');
-  plugins.helper.sassLint      = require('../helper/sass-lint');
+  // plugins.helper.sassLint      = require('../helper/sass-lint');
   plugins.helper.svg           = require('../helper/svg');
 
   plugins.util.log(
@@ -134,11 +134,12 @@ module.exports = function(resolve) { // eslint-disable-line func-names
       );
 
       // SASS Lint
-      if (!plugins.util.env.disableLinting) {
-        if (plugins.path.extname(path) === '.scss') {
-          plugins.helper.sassLint(gulp, plugins, config, name, path);
-        }
-      }
+      // Disable SASS Linting
+      // if (!plugins.util.env.disableLinting) {
+      //   if (plugins.path.extname(path) === '.scss') {
+      //     plugins.helper.sassLint(gulp, plugins, config, name, path);
+      //   }
+      // }
 
       // SASS Compilation
       if (plugins.path.extname(path) === '.scss') {
@@ -167,14 +168,14 @@ module.exports = function(resolve) { // eslint-disable-line func-names
       }
     });
 
-    destWatcher.on('change', path => {
-      // CSS Lint
-      if (!plugins.util.env.disableLinting) {
-        if (plugins.path.extname(path) === '.css') {
-          plugins.helper.cssLint(gulp, plugins, config, name, path);
-        }
-      }
-    });
+    // destWatcher.on('change', path => {
+    //   // CSS Lint
+    //   if (!plugins.util.env.disableLinting) {
+    //     if (plugins.path.extname(path) === '.css') {
+    //       plugins.helper.cssLint(gulp, plugins, config, name, path);
+    //     }
+    //   }
+    // });
   });
 
   resolve();
