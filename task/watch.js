@@ -44,6 +44,7 @@ module.exports = function(resolve) { // eslint-disable-line func-names
 
     // Initialize watchers
     const tempWatcher = plugins.chokidar.watch(themeTempSrc, watcherConfig), // eslint-disable-line one-var
+          widgetTempWatcher = plugins.chokidar.watch(config.projectPath + 'app/code', watcherConfig), // eslint-disable-line one-var
           srcWatcher = plugins.chokidar.watch(themeSrc, watcherConfig),
           destWatcher = plugins.chokidar.watch(themeDest, watcherConfig);
 
@@ -171,6 +172,14 @@ module.exports = function(resolve) { // eslint-disable-line func-names
         return plugins.path.extname(path) === ext;
       })) {
         plugins.browserSync.reload();
+      }
+    });
+
+    // Events handling
+    widgetTempWatcher.on('change', path => {
+      // Templates
+      if (plugins.path.extname(path) === '.twig') {
+        plugins.helper.templates(gulp, plugins, config, name);
       }
     });
 
