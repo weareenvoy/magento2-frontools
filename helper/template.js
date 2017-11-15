@@ -7,20 +7,32 @@ module.exports = function(gulp, plugins, config, name, file) { // eslint-disable
   const srcBase = config.projectPath + 'var/view_preprocessed/frontools' + theme.dest.replace('pub/static', '');
   const twig = require('gulp-twig');
 
-  function processTemplate (file) {
+  function processTemplate (stream, file) {
     const relativePath = path.relative(srcBase, file.path);
-    console.log('- processing template: ' + relativePath);
     const isWidgetTemplate = relativePath.startsWith('templates/widgets');
     const isThemeTemplate = relativePath.startsWith('templates/theme');
 
     if (isWidgetTemplate) {
-      const destPath = config.projectPath + 'app/code/' + path.dirname(path.relative('templates/widgets', relativePath)) + '/view/frontend/templates/' + path.basename(relativePath, '.twig') + '.phtml';
-      console.log('-- writing widget template: ' + destPath);
-      fs.createReadStream(file.path).pipe(fs.createWriteStream(destPath));
+      const destPath = config.projectPath + 'app/code/' + path.dirname(path.relative('templates/widgets', relativePath)) + '/view/frontend/templates/';
+      logWritingTemplate(file, destPath, 'widget');
+      return writeTemplate(file, destPath);
     }
     else if (isThemeTemplate) {
-      console.log('theme template');
+      const destPath = config.projectPath + theme.src + '/' + path.dirname(path.relative('templates/theme', relativePath)) + '/';;
+      logWritingTemplate(file, destPath, 'theme');
+      return writeTemplate(file, destPath);
     }
+  }
+
+  function writeTemplate (file, destPath) {
+    return gulp.src(file.path)
+              .pipe(twig())
+              .pipe(plugins.rename({ extname: '.phtml' }))
+              .pipe(gulp.dest(destPath));
+  }
+
+  function logWritingTemplate (file, destPath, type) {
+    console.log('-- writing ' + type + ' template: ' + path.relative(config.projectPath, destPath) + '/' + path.basename(file.path));
   }
 
   return gulp.src(
@@ -36,13 +48,9 @@ module.exports = function(gulp, plugins, config, name, file) { // eslint-disable
       )
     )
     .pipe(foreach(function (stream, file) {
-      processTemplate(file);
+      processTemplate(stream, file);
       return stream;
-      // return stream
-      //   .pipe(examineFile(stream, file));
-        // .pipe(twig());
     }))
-    // .pipe(gulp.dest(config.projectPath + 'app/code/Envoy/HeroWidget/view/frontend/templates'))
     .pipe(plugins.logger({
       display   : 'name',
       beforeEach: 'Theme: ' + name + ' ',
