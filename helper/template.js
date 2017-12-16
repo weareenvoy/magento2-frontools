@@ -6,6 +6,7 @@ module.exports = function(gulp, plugins, config, name, file) { // eslint-disable
   const theme = config.themes[name];
   const srcBase = config.projectPath + 'var/view_preprocessed/frontools' + theme.dest.replace('pub/static', '');
   const twig = require('gulp-twig');
+  const insert = require('gulp-insert');
 
   function processTemplate (file) {
     const destPath = path.dirname(file.path);
@@ -16,6 +17,14 @@ module.exports = function(gulp, plugins, config, name, file) { // eslint-disable
   function writeTemplate (srcPath, destPath) {
     return gulp.src(srcPath)
               .pipe(twig())
+              .pipe(insert.prepend(`
+<?php
+  /* ------------------------------------------------------------------
+   * ------------------------------------------------------------------
+   * * * * CAUTION: DO NOT EDIT - COMPILED FILE * * * * * * * * * * * *
+   * ------------------------------------------------------------------
+   * ------------------------------------------------------------------ */
+?>`))
               .pipe(plugins.rename({ extname: '.phtml' }))
               .pipe(gulp.dest(destPath));
   }
