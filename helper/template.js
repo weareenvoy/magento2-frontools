@@ -10,11 +10,13 @@ module.exports = function(gulp, plugins, config, name, file) { // eslint-disable
 
   function processTemplate (file) {
     const destPath = path.dirname(file.path);
+    console.log('file.path: ' + file.path)
     logWritingTemplate(file.path, destPath)
     return writeTemplate(file.path, destPath);
   }
 
   function writeTemplate (srcPath, destPath) {
+    console.log('srcPath: ' + srcPath);
     return gulp.src(srcPath)
               .pipe(twig())
               .pipe(insert.prepend(`
@@ -26,6 +28,33 @@ module.exports = function(gulp, plugins, config, name, file) { // eslint-disable
    * ------------------------------------------------------------------ */
 ?>`))
               .pipe(plugins.rename({ extname: '.phtml' }))
+              .pipe(foreach(function (stream, file) {
+                // const phtmlPath = path.basename(file.path, '.twig') + '.phtml';
+                // /Users/Envoy/repositories/the-honest-kitchen-m2/app/code/Envoy/StatBlocksWidget/view/frontend/templates/stat-blocks.twig
+                // test.indexOf('World') >= 0
+                const isSrcDir = (file.path.indexOf('/src/') >= 0);
+                console.log('isSrcDir: ' + isSrcDir);
+                if (!isSrcDir) {
+                  // const writePath = file.path.replace(config.projectPath + 'var/view_preprocessed/frontools/', '');
+                  // frontend/Envoy/thehonestkitchen/Magento_Catalog/templates/product/test.phtml' hmmm
+                  const writePath = config.projectPath + file.path.replace(config.projectPath + 'var/view_preprocessed/frontools/', '');
+                  console.log('writePath: ' + writePath);
+
+                  fs.access(file.path, function (err) {
+                    if (err) {
+                      if (err.code === 'ENOENT') {
+                        console.log('`PHTML file does not exist...`');
+                        // Create empty file
+                        fs.writeFile(writePath, '', function (err) {
+                          if (err) throw err;
+                          console.log("The file was succesfully saved!");
+                        });
+                      }
+                    }
+                  });
+                }
+                return stream;
+              }))
               .pipe(gulp.dest(destPath));
   }
 
