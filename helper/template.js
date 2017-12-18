@@ -33,26 +33,35 @@ module.exports = function(gulp, plugins, config, name, file) { // eslint-disable
                 // /Users/Envoy/repositories/the-honest-kitchen-m2/app/code/Envoy/StatBlocksWidget/view/frontend/templates/stat-blocks.twig
                 // test.indexOf('World') >= 0
                 const isSrcDir = (file.path.indexOf('/src/') >= 0);
-                console.log('isSrcDir: ' + isSrcDir);
-                if (!isSrcDir) {
-                  // const writePath = file.path.replace(config.projectPath + 'var/view_preprocessed/frontools/', '');
-                  // frontend/Envoy/thehonestkitchen/Magento_Catalog/templates/product/test.phtml' hmmm
-                  const writePath = config.projectPath + file.path.replace(config.projectPath + 'var/view_preprocessed/frontools/', '');
-                  console.log('writePath: ' + writePath);
+                const filename = path.basename(file.path)
+                // console.log('filename: ' + filename);
+                if (filename === 'test.phtml' || filename === 'test.twig') { // TEMP: For deubgging purposes
+                  console.log('isSrcDir: ' + isSrcDir);
+                  if (!isSrcDir) {
+                    // const writePath = file.path.replace(config.projectPath + 'var/view_preprocessed/frontools/', '');
+                    // frontend/Envoy/thehonestkitchen/Magento_Catalog/templates/product/test.phtml' hmmm
+                    const writePath = config.projectPath + file.path.replace(config.projectPath + 'var/view_preprocessed/frontools/', 'app/design/');
+                    console.log('writePath: ' + writePath);
 
-                  fs.access(file.path, function (err) {
-                    if (err) {
-                      if (err.code === 'ENOENT') {
-                        console.log('`PHTML file does not exist...`');
-                        // Create empty file
-                        fs.writeFile(writePath, '', function (err) {
-                          if (err) throw err;
-                          console.log("The file was succesfully saved!");
-                        });
+                    fs.access(file.path, function (err) {
+                      if (err) {
+                        if (err.code === 'ENOENT') {
+                          console.log('PHTML file does not exist...');
+                          // Create empty file with data from original file
+                          fs.readFile(srcPath, 'utf8', function (err, data) {
+                            fs.writeFile(writePath, data, { flags: 'wx' }, function (err) {
+                              if (err) throw err;
+                              console.log("The file was succesfully created!");
+                            });
+                          });
+                        }
                       }
-                    }
-                  });
+                    });
+                  }
+
                 }
+
+
                 return stream;
               }))
               .pipe(gulp.dest(destPath));
