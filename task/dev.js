@@ -9,10 +9,10 @@ module.exports = function() { // eslint-disable-line func-names
 
   plugins.runSequence('inheritance', 'babel', 'styles', 'templates', () => {
     // Setup browser-sync
-    plugins.browserSync.create();
-    plugins.browserSync(
-      require('../helper/config-loader')('browser-sync.json', plugins, config)
-    );
-    plugins.runSequence('watch');
+//    plugins.browserSync.create();
+//    plugins.browserSync(
+//      require('../helper/config-loader')('browser-sync.json', plugins, config)
+//    );
+//    plugins.runSequence('watch');
   });
 };
